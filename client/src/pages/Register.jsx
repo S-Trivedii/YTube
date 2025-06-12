@@ -39,6 +39,7 @@ const Register = () => {
 
         if (loginResponse.data.success) {
           dispatch(loginSuccess({ user: loginResponse.data.user }));
+          localStorage.setItem("user", JSON.stringify(loginResponse.data.user));
           navigate("/");
         }
       }
@@ -117,7 +118,7 @@ const Register = () => {
 
         <button
           onClick={handleRegister}
-          className={`w-full py-2 rounded text-white ${
+          className={`w-full cursor-pointer py-2 rounded text-white ${
             loading
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-green-600 hover:bg-green-700"

@@ -1,13 +1,54 @@
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSidebar } from "../../redux/sidebarSlice";
 import { FaBars, FaYoutube } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import Dropdown from "../ui/Dropdown";
+import { useRef, useState, useEffect } from "react";
+import { logout } from "../../redux/authSlice";
+import EditProfilePopup from "../ui/EditProfilePopup";
 
 const Navbar = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showEditPopup, setShowEditPopup] = useState(false);
+
+  const avatarRef = useRef(null);
+  const dropdownRef = useRef(null);
 
   const getInitial = (name) => name?.charAt(0)?.toUpperCase();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/");
+  };
+
+  const handleEditProfile = () => {
+    setShowEditPopup(true);
+  };
+
+  const handleSaveProfile = (imageUrl) => {
+    console.log("Image to upload or save: ", imageUrl);
+
+    // Optionally send this to backend using FormData and axios
+  };
+
+  // 👇 handle outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target) &&
+        avatarRef.current &&
+        !avatarRef.current.contains(e.target)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <nav className="flex items-center justify-between px-4 py-2 bg-white sticky top-0 z-50 shadow-sm">
@@ -35,18 +76,40 @@ const Navbar = () => {
       </div>
 
       {isAuthenticated && user ? (
-        <div
-          className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-sm cursor-pointer overflow-hidden"
-          title={user.username}
-        >
-          {user.avatar ? (
-            <img
-              src={user.avatar}
-              alt={`${user.username} picture`}
-              className="w-full h-full object-cover"
+        <div className="relative">
+          <div
+            ref={avatarRef}
+            className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-sm cursor-pointer overflow-hidden"
+            onClick={() => setShowDropdown((prev) => !prev)}
+            title={user.username}
+          >
+            {user.avatar ? (
+              <img
+                src={user.avatar}
+                alt={`${user.username} picture`}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              getInitial(user.username)
+            )}
+          </div>
+
+          {showDropdown && (
+            <Dropdown
+              username={user.username}
+              avatar={user.avatar}
+              onLogout={handleLogout}
+              onEditProfile={handleEditProfile}
+              onClose={() => setShowDropdown(false)}
+              innerRef={dropdownRef} // 👈 pass ref down
             />
-          ) : (
-            getInitial(user.username)
+          )}
+
+          {showEditPopup && (
+            <EditProfilePopup
+              onClose={() => setShowEditPopup(false)}
+              onSave={handleSaveProfile}
+            />
           )}
         </div>
       ) : (

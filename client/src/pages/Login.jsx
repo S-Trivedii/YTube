@@ -28,6 +28,7 @@ const Login = () => {
 
       if (response.data.success) {
         dispatch(loginSuccess({ user: response.data.user }));
+        localStorage.setItem("user", JSON.stringify(response.data.user));
         navigate("/");
       }
     } catch (error) {
@@ -73,7 +74,7 @@ const Login = () => {
         </div>
         <button
           onClick={handleLogin}
-          className={`w-full py-2 rounded text-white ${
+          className={`w-full py-2 cursor-pointer rounded text-white ${
             loading
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-red-600 hover:bg-red-700"
@@ -83,7 +84,10 @@ const Login = () => {
         </button>
         <p className="mt-4 text-sm text-center">
           Don't have an account?{" "}
-          <Link to="/register" className="text-blue-600 hover:underline">
+          <Link
+            to="/register"
+            className="text-blue-600 cursor-pointer hover:underline"
+          >
             Register
           </Link>
         </p>
