@@ -37,6 +37,8 @@ const Register = () => {
           password: input.password,
         });
 
+        console.log("Login-Response ", loginResponse.data);
+
         if (loginResponse.data.success) {
           dispatch(loginSuccess({ user: loginResponse.data.user }));
           localStorage.setItem("user", JSON.stringify(loginResponse.data.user));

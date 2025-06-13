@@ -15,6 +15,8 @@ const EditProfilePopup = ({ onClose, onSave }) => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
+
+    // clean-up function
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
@@ -22,15 +24,17 @@ const EditProfilePopup = ({ onClose, onSave }) => {
     const file = e.target.files[0];
     if (!file) return;
 
+    // Load image to check its size
+
     const img = new Image();
-    const objectURL = URL.createObjectURL(file);
+    const objectURL = URL.createObjectURL(file); // creates a temporary URL pointing to the uploaded file so it can be loaded and previewed in the browser.
     img.onload = () => {
-      if (img.width <= 350) {
+      if (img.width <= 1080) {
         setImage(file);
         setPreview(objectURL);
         setIsImageValid(true);
       } else {
-        alert("Image width must be 350px or less.");
+        alert("Image width must be 1080px or less.");
         setImage(null);
         setPreview(null);
         setIsImageValid(false);
@@ -75,7 +79,7 @@ const EditProfilePopup = ({ onClose, onSave }) => {
             />
           </label>
           <p className="text-xs text-gray-500 mt-1">
-            Only images up to 350px width allowed
+            Only images up to 1080px width allowed
           </p>
         </div>
 

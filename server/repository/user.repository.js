@@ -21,3 +21,13 @@ export const createUserRepo = async ({ username, email, password }) => {
 
   return userObj;
 };
+
+export const uploadAvatarRepo = async (path, userId) => {
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { avatar: path },
+    { new: true } // return the updated document
+  ).select("-password");
+
+  return updatedUser;
+};

@@ -4,8 +4,9 @@ import { FaBars, FaYoutube } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import Dropdown from "../ui/Dropdown";
 import { useRef, useState, useEffect } from "react";
-import { logout } from "../../redux/authSlice";
+import { logout, updateUser } from "../../redux/authSlice";
 import EditProfilePopup from "../ui/EditProfilePopup";
+import axios from "../../utils/axiosInstance";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -28,10 +29,27 @@ const Navbar = () => {
     setShowEditPopup(true);
   };
 
-  const handleSaveProfile = (imageUrl) => {
-    console.log("Image to upload or save: ", imageUrl);
+  // This function will get triggred when 'Save changes' btn get clicked inside EditProfilePopup component
+  const handleSaveProfile = async (image) => {
+    console.log("Receive image file (image): ", image);
 
-    // Optionally send this to backend using FormData and axios
+    // Send this image to backend using FormData and axios
+
+    const formData = new FormData();
+    formData.append("avatar", image); // 'avatar' should match your backend field name
+
+    try {
+      const response = await axios.post("/user/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      // console.log("Upload Success:", response.data);
+
+      dispatch(updateUser(response.data.updatedUser));
+    } catch (error) {
+      console.error("Upload Failed:", error);
+    }
   };
 
   // 👇 handle outside click
@@ -79,7 +97,7 @@ const Navbar = () => {
         <div className="relative">
           <div
             ref={avatarRef}
-            className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-sm cursor-pointer overflow-hidden"
+            className="w-9 h-9 rounded-full  bg-blue-600 text-white flex items-center justify-center font-semibold text-sm cursor-pointer overflow-hidden"
             onClick={() => setShowDropdown((prev) => !prev)}
             title={user.username}
           >

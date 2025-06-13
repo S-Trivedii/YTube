@@ -6,6 +6,7 @@ import {
   findUserByEmailRepo,
   createUserRepo,
   findUserByUsernameRepo,
+  uploadAvatarRepo,
 } from "../repository/user.repository.js";
 
 // Register user service
@@ -29,13 +30,36 @@ export const registerUserService = async ({ username, email, password }) => {
     password: hashPassword,
   });
 
-  return savedUser;
+  const userForClient = savedUser.toObject();
+  delete userForClient.password;
+
+  // Auto-login: generate token
+  const tokenData = {
+    userId: savedUser._id,
+  };
+
+  const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
+    expiresIn: "1d",
+  });
+
+  return { user: userForClient, token }; // sending token to controller
+};
+
+// Upload Avatar Service
+export const uploadAvatarService = async ({ path, userId }) => {
+  const updatedUser = await uploadAvatarRepo(path, userId);
+
+  if (!updatedUser) {
+    throw createHttpError(404, "User not found");
+  }
+
+  return updatedUser;
 };
 
 // Login user service
 export const loginUserService = async ({ identifier, password }) => {
   // identifier might be an email or user, first we have find weather identifier is email or username to fetch document
-  console.log("login user service");
+  // console.log("login user service");
   const isEmail = identifier.includes("@");
 
   let user;
