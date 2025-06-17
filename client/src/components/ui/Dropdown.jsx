@@ -1,4 +1,5 @@
-import { FaUserEdit, FaSignOutAlt } from "react-icons/fa";
+import { FaUserEdit, FaSignOutAlt, FaUser } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Dropdown = ({
   username,
@@ -30,6 +31,15 @@ const Dropdown = ({
         </div>
         <div className="font-medium text-gray-800 truncate">{username}</div>
       </div>
+
+      {/* View Channel */}
+      <Link
+        to="/channel"
+        className="flex items-center w-full px-4 py-2 cursor-pointer hover:bg-gray-100 text-left gap-2"
+      >
+        <FaUser className="text-green-500" />
+        View Channel
+      </Link>
 
       {/* Edit Profile */}
       <button

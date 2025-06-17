@@ -2,6 +2,7 @@ import { GoPerson } from "react-icons/go";
 import { HiPlusSm } from "react-icons/hi";
 import { FaTimes } from "react-icons/fa";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const [showCreateCard, setShowCreateCard] = useState(true);
@@ -40,10 +41,13 @@ const Home = () => {
             Start your journey as a content creator. Create your channel to
             upload and share videos with the world.
           </p>
-          <button className="flex items-center cursor-pointer gap-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">
+          <Link
+            to="/channel/setup"
+            className="flex items-center cursor-pointer gap-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+          >
             <HiPlusSm className="text-lg" />
             Create Channel
-          </button>
+          </Link>
         </div>
       )}
     </div>
