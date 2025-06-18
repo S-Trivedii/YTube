@@ -19,7 +19,7 @@ export const createUserRepo = async ({ username, email, password }) => {
   // Remove password before returning
   delete userObj.password;
 
-  return userObj;
+  return userObj; // sending object not a doc
 };
 
 export const uploadAvatarRepo = async (path, userId) => {

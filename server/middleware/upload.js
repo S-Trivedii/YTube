@@ -26,10 +26,10 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// File size limit: 4MB for avatar only
+// File size limit: 6MB for avatar only
 const limits = {
   fileSize: (req, file) =>
-    req.body.type === "avatar" ? 4 * 1024 * 1024 : undefined, // 4MB
+    req.body.type === "avatar" ? 6 * 1024 * 1024 : undefined, // 6MB
 };
 
 // Multer instance
@@ -37,7 +37,7 @@ const upload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: 4 * 1024 * 1024, // Enforces 4MB for all files.
+    fileSize: 6 * 1024 * 1024, // Enforces 6MB for all files.
   },
 });
 

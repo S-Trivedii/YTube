@@ -30,8 +30,8 @@ export const registerUserService = async ({ username, email, password }) => {
     password: hashPassword,
   });
 
-  const userForClient = savedUser.toObject();
-  delete userForClient.password;
+  const userForClient = savedUser;
+  // elete userForClient.password;
 
   // Auto-login: generate token
   const tokenData = {
