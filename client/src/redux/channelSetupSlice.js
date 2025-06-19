@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  isChannelExist: false,
   channelLogo: null,
   channelName: "",
   channelBanner: null,
@@ -11,6 +12,9 @@ const channelSlice = createSlice({
   name: "channelSetup",
   initialState,
   reducers: {
+    setIsChannelExist: (state, action) => {
+      state.isChannelExist = action.payload;
+    },
     setChannelLogo: (state, action) => {
       state.channelLogo = action.payload;
     },
@@ -27,6 +31,7 @@ const channelSlice = createSlice({
 });
 
 export const {
+  setIsChannelExist,
   setChannelLogo,
   setChannelName,
   setChannelBanner,
