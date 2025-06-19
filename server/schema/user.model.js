@@ -30,6 +30,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    channelId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Channel",
+      default: null,
+    },
   },
   { timestamps: true } // Adds createdAt and updatedAt fields
 );
