@@ -24,3 +24,10 @@ export const createChannelRepo = async ({
 
   return newChannel;
 };
+
+export const getChannelRepo = async (userId) => {
+  return await Channel.findOne({ channelOwner: userId }).populate(
+    "channelOwner",
+    "username"
+  );
+};

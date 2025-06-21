@@ -1,4 +1,7 @@
-import { createChannelService } from "../services/channel.service.js";
+import {
+  createChannelService,
+  getChannelService,
+} from "../services/channel.service.js";
 
 // Create Channel
 export const createChannelController = async (req, res) => {
@@ -31,4 +34,19 @@ export const createChannelController = async (req, res) => {
       success: false,
     });
   }
+};
+
+// Get channel
+export const getChannelController = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    const channelDetails = await getChannelService(userId);
+
+    return res.status(200).json({
+      message: "Successfully get channel",
+      success: true,
+      channelDetails,
+    });
+  } catch (error) {}
 };
