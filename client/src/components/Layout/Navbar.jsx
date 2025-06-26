@@ -1,6 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSidebar } from "../../redux/sidebarSlice";
 import { FaBars, FaYoutube } from "react-icons/fa";
+import { HiOutlineVideoCamera } from "react-icons/hi";
+import { FaPlus } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
 import Dropdown from "../ui/Dropdown";
 import { useRef, useState, useEffect } from "react";
@@ -12,6 +14,10 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const isChannelExist = useSelector(
+    (state) => state.channelSetup?.isChannelExist
+  );
+
   const [showDropdown, setShowDropdown] = useState(false);
   const [showEditPopup, setShowEditPopup] = useState(false);
 
@@ -29,14 +35,9 @@ const Navbar = () => {
     setShowEditPopup(true);
   };
 
-  // This function will get triggred when 'Save changes' btn get clicked inside EditProfilePopup component
   const handleSaveProfile = async (image) => {
-    console.log("Receive image file (image): ", image);
-
-    // Send this image to backend using FormData and axios
-
     const formData = new FormData();
-    formData.append("avatar", image); // 'avatar' should match your backend field name
+    formData.append("avatar", image);
 
     try {
       const response = await axios.post("/user/upload", formData, {
@@ -44,15 +45,12 @@ const Navbar = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      // console.log("Upload Success:", response.data);
-
       dispatch(updateUser(response.data.updatedUser));
     } catch (error) {
       console.error("Upload Failed:", error);
     }
   };
 
-  // 👇 handle outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -70,6 +68,7 @@ const Navbar = () => {
 
   return (
     <nav className="flex items-center justify-between px-4 py-2 bg-white sticky top-0 z-50 shadow-sm">
+      {/* Left section: Sidebar toggle + Logo */}
       <div className="flex items-center gap-4">
         <button onClick={() => dispatch(toggleSidebar())}>
           <FaBars className="text-xl cursor-pointer" />
@@ -82,6 +81,7 @@ const Navbar = () => {
         </div>
       </div>
 
+      {/* Center section: Search */}
       <div className="hidden sm:flex flex-1 justify-center max-w-xl">
         <input
           type="text"
@@ -93,51 +93,64 @@ const Navbar = () => {
         </button>
       </div>
 
-      {isAuthenticated && user ? (
-        <div className="relative">
-          <div
-            ref={avatarRef}
-            className="w-9 h-9 rounded-full  bg-blue-600 text-white flex items-center justify-center font-semibold text-sm cursor-pointer overflow-hidden"
-            onClick={() => setShowDropdown((prev) => !prev)}
-            title={user.username}
+      {/* Right section: Upload + Avatar/Dropdown */}
+      <div className="flex items-center gap-3">
+        {isAuthenticated && isChannelExist && (
+          <Link
+            to="/upload"
+            className="hidden sm:flex items-center gap-1 bg-black text-white px-3 py-1.5 rounded-lg transition text-sm font-medium"
           >
-            {user.avatar ? (
-              <img
-                src={user.avatar}
-                alt={`${user.username} picture`}
-                className="w-full h-full object-cover"
+            <FaPlus className="text-lg" />
+            <span className="hidden sm:inline">Upload</span>
+          </Link>
+        )}
+
+        {isAuthenticated && user ? (
+          <div className="relative">
+            <div
+              ref={avatarRef}
+              className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-sm cursor-pointer overflow-hidden"
+              onClick={() => setShowDropdown((prev) => !prev)}
+              title={user.username}
+            >
+              {user.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt={`${user.username} avatar`}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                getInitial(user.username)
+              )}
+            </div>
+
+            {showDropdown && (
+              <Dropdown
+                username={user.username}
+                avatar={user.avatar}
+                onLogout={handleLogout}
+                onEditProfile={handleEditProfile}
+                onClose={() => setShowDropdown(false)}
+                innerRef={dropdownRef}
               />
-            ) : (
-              getInitial(user.username)
+            )}
+
+            {showEditPopup && (
+              <EditProfilePopup
+                onClose={() => setShowEditPopup(false)}
+                onSave={handleSaveProfile}
+              />
             )}
           </div>
-
-          {showDropdown && (
-            <Dropdown
-              username={user.username}
-              avatar={user.avatar}
-              onLogout={handleLogout}
-              onEditProfile={handleEditProfile}
-              onClose={() => setShowDropdown(false)}
-              innerRef={dropdownRef} // 👈 pass ref down
-            />
-          )}
-
-          {showEditPopup && (
-            <EditProfilePopup
-              onClose={() => setShowEditPopup(false)}
-              onSave={handleSaveProfile}
-            />
-          )}
-        </div>
-      ) : (
-        <Link
-          to="/login"
-          className="text-blue-600 font-medium border border-blue-600 px-4 py-1 rounded hover:bg-blue-600 hover:text-white transition text-sm"
-        >
-          Sign In
-        </Link>
-      )}
+        ) : (
+          <Link
+            to="/login"
+            className="text-blue-600 font-medium border border-blue-600 px-4 py-1 rounded hover:bg-blue-600 hover:text-white transition text-sm"
+          >
+            Sign In
+          </Link>
+        )}
+      </div>
     </nav>
   );
 };

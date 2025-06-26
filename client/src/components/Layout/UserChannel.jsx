@@ -1,17 +1,24 @@
-import React from "react";
 import { useSelector } from "react-redux";
+import VideoGallery from "../ui/VideoGallary";
 
 const UserChannel = () => {
   const { channelBanner, channelLogo, channelName, channelDescription } =
     useSelector((state) => state.channelSetup);
 
-  const videos = []; // Replace with actual video data from your backend or store
+  const savedUser = JSON.parse(localStorage.getItem("user"));
+
+  // const videos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // Replace with actual video data
+  const videos = [];
+
+  const username = `@${savedUser.username}`;
+  const subscribers = "12.3K subscribers";
+  const videoCount = "34 videos";
 
   return (
-    <div className="flex flex-col items-center w-full min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center w-full">
       {/* Banner */}
       <div
-        className="w-full h-48 sm:h-64 md:h-60 lg:h-80 bg-cover bg-center relative"
+        className="w-[90%] max-h-[220px] h-32 sm:h-36 md:h-44 lg:h-[220px] bg-cover bg-center rounded-xl mt-2 shadow-sm"
         style={{
           backgroundImage: channelBanner
             ? `url(${channelBanner})`
@@ -19,57 +26,44 @@ const UserChannel = () => {
         }}
       />
 
-      {/* Channel Info */}
-      <div className="w-full max-w-6xl px-4 sm:px-6 md:px-8 -mt-12 sm:-mt-16 flex flex-col sm:flex-row items-center sm:items-end gap-4">
+      {/* Channel Info Section */}
+      <div className="w-full max-w-6xl px-4 sm:px-6 md:px-8 mt-6 flex flex-col sm:flex-row items-start gap-6">
         {/* Channel Logo */}
-        <img
-          src={
-            channelLogo || "https://via.placeholder.com/100x100.png?text=Logo"
-          }
-          alt="Channel Logo"
-          className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white object-cover shadow-md"
-        />
+        <div className="flex-shrink-0">
+          <img
+            src={
+              channelLogo || "https://via.placeholder.com/150x150.png?text=Logo"
+            }
+            alt="Channel Logo"
+            className="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full border-4 border-white object-cover shadow-md bg-white"
+          />
+        </div>
 
-        {/* Name & Description */}
-        <div className="flex flex-col sm:ml-4 text-center sm:text-left">
+        {/* Channel Details */}
+        <div className="flex flex-col">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
             {channelName || "Channel Name"}
           </h1>
-          <p className="text-sm sm:text-base text-gray-600 mt-1">
+
+          <div className="text-sm sm:text-base text-gray-600 mt-1">
+            <span className="mr-2 text-gray-700">{username}</span> •{" "}
+            <span className="mx-2">{subscribers}</span> •{" "}
+            <span>{videoCount}</span>
+          </div>
+
+          <p className="text-sm sm:text-base text-gray-600 mt-2">
             {channelDescription || "Channel description goes here..."}
           </p>
+
+          <button className="mt-4 px-5 py-2 bg-black text-white rounded-3xl w-fit font-semibold">
+            Subscribe
+          </button>
         </div>
       </div>
 
       {/* Videos Section */}
-      <div className="w-full max-w-6xl px-4 sm:px-6 md:px-8 mt-10">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">Videos</h2>
 
-        {videos.length === 0 ? (
-          <div className="text-center py-10 text-gray-500 bg-white rounded-md shadow-sm">
-            No videos exist yet.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {videos.map((video, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-lg shadow-md overflow-hidden"
-              >
-                <img
-                  src={video.thumbnail}
-                  alt={video.title}
-                  className="w-full h-40 object-cover"
-                />
-                <div className="p-4">
-                  <h3 className="font-semibold text-lg">{video.title}</h3>
-                  <p className="text-sm text-gray-500">{video.views} views</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      <VideoGallery videos={videos} />
     </div>
   );
 };
