@@ -1,4 +1,5 @@
 import { FaUpload } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const VideoGallery = ({ videos }) => {
   return (
@@ -11,10 +12,13 @@ const VideoGallery = ({ videos }) => {
       {videos.length === 0 ? (
         <div className="text-center py-16 text-gray-500 bg-white rounded-md shadow-sm">
           <p className="mb-4">No videos exist yet.</p>
-          <button className="inline-flex items-center gap-2 px-5 py-2 bg-black text-white rounded-md cursor-pointer transition font-semibold">
+          <Link
+            to={"/video/upload"}
+            className="inline-flex items-center gap-2 px-5 py-2 bg-black text-white rounded-md cursor-pointer transition font-semibold"
+          >
             <FaUpload className="text-white" />
             Upload Video
-          </button>
+          </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">

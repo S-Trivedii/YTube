@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Channel from "./pages/Channel";
 import Setup from "./pages/Setup";
+import UploadVideo from "./pages/UploadVideo";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
   {
     path: "/channel/setup",
     element: <Setup />,
+  },
+  {
+    path: "/video/upload",
+    element: <UploadVideo />,
   },
 ]);
 

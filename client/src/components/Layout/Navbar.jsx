@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSidebar } from "../../redux/sidebarSlice";
 import { FaBars, FaYoutube } from "react-icons/fa";
-import { HiOutlineVideoCamera } from "react-icons/hi";
 import { FaPlus } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
 import Dropdown from "../ui/Dropdown";
@@ -97,7 +96,7 @@ const Navbar = () => {
       <div className="flex items-center gap-3">
         {isAuthenticated && isChannelExist && (
           <Link
-            to="/upload"
+            to="/video/upload"
             className="hidden sm:flex items-center gap-1 bg-black text-white px-3 py-1.5 rounded-lg transition text-sm font-medium"
           >
             <FaPlus className="text-lg" />
