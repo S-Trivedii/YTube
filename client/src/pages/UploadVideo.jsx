@@ -8,10 +8,14 @@ import PublishSection from "../components/ui/PublishSection";
 const UploadVideo = () => {
   const [videoFile, setVideoFile] = useState(null);
   const [thumbnailFile, setThumbnailFile] = useState(null);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
+  const [videoDetails, setVideoDetails] = useState({
+    title: "",
+    description: "",
+    category: "",
+  });
+
   const [isPublic, setIsPublic] = useState(true);
+
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -31,22 +35,20 @@ const UploadVideo = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!videoFile || !title.trim()) return;
+    if (!videoFile || !videoDetails.title.trim()) return;
 
     setIsUploading(true);
-    for (let i = 0; i <= 100; i += 10) {
-      setUploadProgress(i);
-      await new Promise((resolve) => setTimeout(resolve, 150));
-    }
 
-    console.log("Uploading video:", {
-      videoFile,
-      thumbnailFile,
-      title,
-      description,
-      category,
-      isPublic,
-    });
+    const formData = new FormData();
+    formData.append("video", videoFile);
+    if (thumbnailFile) formData.append("thumbnail");
+
+    // console.log("Uploading video:", {
+    //   videoFile,
+    //   thumbnailFile,
+    //   videoDetails,
+    //   isPublic,
+    // });
 
     setIsUploading(false);
     setUploadProgress(0);
@@ -56,7 +58,7 @@ const UploadVideo = () => {
     if (bytes === 0) return "0 Bytes";
     const k = 1024;
     const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const i = Math.floor(Math.log(bytes) / Math.log(k)); // figure out the size of the file Bytes / KB / MB / GB
     return (bytes / Math.pow(k, i)).toFixed(2) + " " + sizes[i];
   };
 
@@ -76,12 +78,8 @@ const UploadVideo = () => {
                 formatFileSize={formatFileSize}
               />
               <VideoDetailsForm
-                title={title}
-                setTitle={setTitle}
-                description={description}
-                setDescription={setDescription}
-                category={category}
-                setCategory={setCategory}
+                videoDetails={videoDetails}
+                setVideoDetails={setVideoDetails}
               />
             </div>
             <div className="space-y-6">
@@ -95,7 +93,7 @@ const UploadVideo = () => {
                 isUploading={isUploading}
                 uploadProgress={uploadProgress}
                 videoFile={videoFile}
-                title={title}
+                title={videoDetails.title}
               />
             </div>
           </div>

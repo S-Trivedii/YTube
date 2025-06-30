@@ -31,7 +31,7 @@ const ThumbnailUpload = ({
           <button
             type="button"
             onClick={() => setThumbnailFile(null)}
-            className="w-full text-sm border px-2 py-1 rounded hover:bg-gray-100"
+            className="w-full text-sm border px-2 py-1 cursor-pointer rounded bg-black text-white"
           >
             Remove
           </button>

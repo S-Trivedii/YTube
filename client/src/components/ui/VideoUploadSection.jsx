@@ -23,15 +23,17 @@ const VideoUploadSection = ({
           />
         </label>
       ) : (
-        <div className="flex justify-between items-center bg-gray-50 p-3 rounded">
+        <div className="flex justify-between items-center bg-green-300 p-3 rounded">
           <div>
             <p className="font-medium">{videoFile.name}</p>
+            {/* Showing size of file after uploading video */}
             <p className="text-sm text-gray-500">
               {formatFileSize(videoFile.size)}
             </p>
           </div>
+          {/* btn for removing the video file */}
           <button type="button" onClick={() => setVideoFile(null)}>
-            <FaTimes />
+            <FaTimes className="cursor-pointer" />
           </button>
         </div>
       )}
