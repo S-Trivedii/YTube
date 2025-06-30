@@ -1,19 +1,23 @@
 import express from "express";
+
 import {
   createChannelController,
   getChannelController,
 } from "../controllers/channel.controller.js";
+
 import { auth } from "../middleware/auth.js";
-import upload from "../middleware/upload.js";
+import { imageUpload } from "../middleware/upload.js";
 
 const channelRouter = express.Router();
 
+// Get user channel
 channelRouter.get("/user", auth, getChannelController);
 
+// Post logo and banner of user channel
 channelRouter.post(
   "/create",
   auth,
-  upload.fields([
+  imageUpload.fields([
     {
       name: "channelLogo",
       maxCount: 1,

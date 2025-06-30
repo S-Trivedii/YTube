@@ -4,21 +4,70 @@ import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../config/cloudinary.js";
 
-// Instance of storage enginer - CloudinaryStorage
-const storage = new CloudinaryStorage({
-  cloudinary, // this tells storage engine which Cloudinary account to use
+// Storage for images (avatars, thumbnails, general images)
+const imageStorage = new CloudinaryStorage({
+  cloudinary,
   params: async (req, file) => {
-    const isAvatar = req.body.type === "avatar";
+    let folder = "images";
+    let transformation = [];
+    if (file.fieldname === "avatar") {
+      folder = "avatars";
+      transformation = [{ width: 1080, crop: "limit" }];
+    } else if (file.fieldname === "thumbnail") {
+      folder = "thumbnails";
+    }
     return {
-      folder: isAvatar ? "avatars" : "images",
+      folder,
       allowed_formats: ["jpg", "jpeg", "png", "webp"],
-      transformation: isAvatar ? [{ width: 1080, crop: "limit" }] : [],
+      transformation,
+      resource_type: "image",
     };
   },
 });
 
-// File filter
-const fileFilter = (req, file, cb) => {
+const videoStorage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
+    return {
+      folder: "videos_yt",
+      allowed_formats: ["mp4", "mov", "avi", "mkv", "webm"],
+      resource_type: "video",
+    };
+  },
+});
+
+const dynamicStorage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
+    if (file.mimetype.startsWith("video/")) {
+      return {
+        folder: "videos_yt",
+        allowed_formats: ["mp4", "mov", "avi", "mkv", "webm"],
+        resource_type: "video",
+      };
+    }
+
+    // For images
+    let folder = "images";
+    let transformation = [];
+    if (file.fieldname === "avatar") {
+      folder = "avatars";
+      transformation = [{ width: 1080, crop: "limit" }];
+    } else if (file.fieldname === "thumbnail") {
+      folder = "thumbnails";
+    }
+
+    return {
+      folder,
+      allowed_formats: ["jpg", "jpeg", "png", "webp"],
+      transformation,
+      resource_type: "image",
+    };
+  },
+});
+
+// File filter for images
+const imageFileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image/")) {
     cb(null, true);
   } else {
@@ -26,22 +75,53 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// File size limit: 6MB for avatar only
-const limits = {
-  fileSize: (req, file) =>
-    req.body.type === "avatar" ? 6 * 1024 * 1024 : undefined, // 6MB
+// File filter for videos
+const videoFileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("video/")) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only video files are allowed!"), false);
+  }
 };
 
-// Multer instance
-const upload = multer({
-  storage,
-  fileFilter,
+// Multer instance for images
+const imageUpload = multer({
+  storage: imageStorage,
+  fileFilter: imageFileFilter,
   limits: {
-    fileSize: 6 * 1024 * 1024, // Enforces 6MB for all files.
+    fileSize: 20 * 1024 * 1024, // 20MB for all types images
   },
 });
 
-export default upload;
+// Multer instance for videos
+const videoUpload = multer({
+  storage: videoStorage,
+  fileFilter: videoFileFilter,
+  limits: {
+    fileSize: 500 * 1024 * 1024, // 500MB for videos
+  },
+});
+
+// Multer instance for mixed uploads (e.g., video + thumbnail)
+const mixedUpload = multer({
+  storage: dynamicStorage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith("video/")) {
+      videoFileFilter(req, file, cb);
+    } else if (file.mimetype.startsWith("image/")) {
+      imageFileFilter(req, file, cb);
+    } else {
+      cb(new Error("Invalid file type!"), false);
+    }
+  },
+  limits: {
+    fileSize: 500 * 1024 * 1024, // Max for any file (images will likely be smaller anyway)
+  },
+});
+
+// Helper for routes: use as mixedUpload.fields([{ name: 'video', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }])
+
+export { imageUpload, videoUpload, mixedUpload };
 
 /*
  params function - It gives Cloudinary instruction on how to handle the incoming file. This function 

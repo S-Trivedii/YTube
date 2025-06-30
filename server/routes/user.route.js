@@ -12,7 +12,9 @@ import {
   loginUserController,
   uploadAvatarController,
 } from "../controllers/user.controller.js";
-import upload from "../middleware/upload.js";
+
+// Middleware
+import { imageUpload } from "../middleware/upload.js";
 import { auth } from "../middleware/auth.js";
 
 const userRouter = express.Router();
@@ -22,7 +24,7 @@ userRouter.post("/login", loginUserValidation, loginUserController);
 userRouter.post(
   "/upload",
   auth,
-  upload.single("avatar"),
+  imageUpload.single("avatar"),
   uploadAvatarController
 );
 

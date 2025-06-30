@@ -35,6 +35,11 @@ const userSchema = new mongoose.Schema(
       ref: "Channel",
       default: null,
     },
+    videos: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Video",
+      default: [],
+    },
   },
   { timestamps: true } // Adds createdAt and updatedAt fields
 );
