@@ -1,4 +1,7 @@
-import { uploadVideoRepo } from "../repository/video.repository.js";
+import {
+  uploadVideoRepo,
+  getVideoByIdRepo,
+} from "../repository/video.repository.js";
 
 export const uploadVideoService = async ({
   videoData,
@@ -15,6 +18,12 @@ export const uploadVideoService = async ({
   });
 
   console.log("service output ", video);
+
+  return video;
+};
+
+export const getVideoByIdService = async (videoId) => {
+  const video = await getVideoByIdRepo(videoId);
 
   return video;
 };

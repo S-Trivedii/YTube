@@ -1,5 +1,9 @@
-import { uploadVideoService } from "../services/video.service.js";
+import {
+  uploadVideoService,
+  getVideoByIdService,
+} from "../services/video.service.js";
 
+// Upload video
 export const uploadVideoController = async (req, res) => {
   try {
     // const { videoTitle, videoDescription, videoCategory, isPublic } = req.body;
@@ -36,6 +40,28 @@ export const uploadVideoController = async (req, res) => {
     console.log(error);
     return res.status(500).json({
       message: "Video upload failed",
+      error: error.message,
+      success: false,
+    });
+  }
+};
+
+// Get video by id
+export const getVideoByIdController = async (req, res) => {
+  try {
+    const { videoId } = req.params;
+    console.log("params ", videoId);
+
+    const video = await getVideoByIdService(videoId);
+
+    return res.status(200).json({
+      message: "Successfully retrive video",
+      success: true,
+      video,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Video retrived failed",
       error: error.message,
       success: false,
     });

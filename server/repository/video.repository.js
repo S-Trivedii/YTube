@@ -21,9 +21,11 @@ export const uploadVideoRepo = async ({
     videoOwner: userId, // userId is the user id
   });
 
-  console.log("video from repo ", video);
-
   await User.findByIdAndUpdate(userId, { $push: { videos: video._id } });
+  return video;
+};
 
+export const getVideoByIdRepo = async (videoId) => {
+  const video = await Video.findOne({ _id: videoId });
   return video;
 };

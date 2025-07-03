@@ -1,6 +1,9 @@
 import express from "express";
 import { auth } from "../middleware/auth.js";
-import { uploadVideoController } from "../controllers/video.controller.js";
+import {
+  uploadVideoController,
+  getVideoByIdController,
+} from "../controllers/video.controller.js";
 import { mixedUpload } from "../middleware/upload.js";
 const videoRouter = express.Router();
 
@@ -14,6 +17,9 @@ videoRouter.post(
   ]),
   uploadVideoController
 );
+
+// Get single video by id
+videoRouter.get("/:videoId", auth, getVideoByIdController);
 
 export default videoRouter;
 
