@@ -1,6 +1,6 @@
 import express from "express";
 import { auth } from "../middleware/auth.js";
-import { uploadVideo } from "../controllers/video.controller.js";
+import { uploadVideoController } from "../controllers/video.controller.js";
 import { mixedUpload } from "../middleware/upload.js";
 const videoRouter = express.Router();
 
@@ -12,7 +12,7 @@ videoRouter.post(
     { name: "video", maxCount: 1 },
     { name: "thumbnail", maxCount: 1 }, // naming should match with formData from frontend
   ]),
-  uploadVideo
+  uploadVideoController
 );
 
 export default videoRouter;

@@ -3,6 +3,7 @@ import express from "express";
 import {
   createChannelController,
   getChannelController,
+  getUserChannelVideosController,
 } from "../controllers/channel.controller.js";
 
 import { auth } from "../middleware/auth.js";
@@ -29,5 +30,8 @@ channelRouter.post(
   ]),
   createChannelController
 );
+
+// Get all videos of a user
+channelRouter.get("/videos", auth, getUserChannelVideosController);
 
 export default channelRouter;

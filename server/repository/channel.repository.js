@@ -31,3 +31,21 @@ export const getChannelRepo = async (userId) => {
     "username"
   );
 };
+
+// Find all videos of user
+export const getUserChannelVideosRepo = async (userId) => {
+  const user = await User.findById(userId).populate({
+    path: "videos", // Field in User model to populate
+    model: "Video", // Mongoose model to populate from
+    match: { videoPublic: true }, // Filter: only public videos
+    select: "videoName videoDescription thumbnailUrl videoUrl videoCategory",
+  });
+
+  return user?.videos || [];
+};
+
+/*
+Mongoose's .populate() replaces ObjectIds in a field (like videos: [ObjectId, ...]) with 
+the actual documents from the referenced collection (Video in this case).
+
+*/

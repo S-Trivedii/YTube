@@ -1,18 +1,39 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import VideoGallery from "../ui/VideoGallary";
+import { useEffect } from "react";
+import axiosInstance from "../../utils/axiosInstance";
+import { setAllVideos, setError, setLoading } from "../../redux/videoSlice";
 
 const UserChannel = () => {
+  const dispatch = useDispatch();
   const { channelBanner, channelLogo, channelName, channelDescription } =
     useSelector((state) => state.channelSetup);
 
-  const savedUser = JSON.parse(localStorage.getItem("user"));
+  const { allVideos } = useSelector((state) => state.videos);
 
-  // const videos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // Replace with actual video data
-  const videos = [];
+  const savedUser = JSON.parse(localStorage.getItem("user"));
 
   const username = `@${savedUser.username}`;
   const subscribers = "12.3K subscribers";
-  const videoCount = "34 videos";
+  const videoCount = `${allVideos.length} videos`;
+
+  useEffect(() => {
+    const fetchChannelVideos = async () => {
+      try {
+        dispatch(setLoading(true));
+        const response = await axiosInstance.get("/channel/videos");
+        // console.log("videos--> ", response.data);
+        dispatch(setAllVideos(response.data.videos));
+        // console.log("fetch all videos of user ", videos);
+      } catch (error) {
+        dispatch(setError("Failed to load videos"));
+      } finally {
+        dispatch(setLoading(false));
+      }
+    };
+
+    fetchChannelVideos();
+  }, []);
 
   return (
     <div className="flex flex-col items-center w-full">
@@ -62,8 +83,7 @@ const UserChannel = () => {
       </div>
 
       {/* Videos Section */}
-
-      <VideoGallery videos={videos} />
+      <VideoGallery videos={allVideos} />
     </div>
   );
 };

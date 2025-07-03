@@ -4,8 +4,12 @@ import VideoDetailsForm from "../components/ui/VideoDetailsForm";
 import ThumbnailUpload from "../components/ui/ThumbnailUpload";
 import PrivacyToggle from "../components/ui/PrivacyToggle";
 import PublishSection from "../components/ui/PublishSection";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../utils/axiosInstance";
 
 const UploadVideo = () => {
+  const navigate = useNavigate();
   const [videoFile, setVideoFile] = useState(null);
   const [thumbnailFile, setThumbnailFile] = useState(null);
   const [videoDetails, setVideoDetails] = useState({
@@ -38,20 +42,44 @@ const UploadVideo = () => {
     if (!videoFile || !videoDetails.title.trim()) return;
 
     setIsUploading(true);
+    setUploadProgress(0);
 
     const formData = new FormData();
     formData.append("video", videoFile);
-    if (thumbnailFile) formData.append("thumbnail");
+    if (thumbnailFile) formData.append("thumbnail", thumbnailFile);
+    formData.append("videoTitle", videoDetails.title);
+    formData.append("videoDescription", videoDetails.description);
+    formData.append("videoCategory", videoDetails.category);
+    formData.append("isPublic", isPublic);
 
-    // console.log("Uploading video:", {
-    //   videoFile,
-    //   thumbnailFile,
-    //   videoDetails,
-    //   isPublic,
-    // });
+    try {
+      const response = await axiosInstance.post("/video/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          setUploadProgress(percentCompleted);
+        },
+      });
 
-    setIsUploading(false);
-    setUploadProgress(0);
+      console.log("Video ", response.data);
+      // Optionally, show success message or redirect
+      if (response.data.success) {
+        toast.success("Video uploaded successfully");
+        navigate("/channel");
+      } else {
+        toast.error("Video upload failed");
+      }
+    } catch (error) {
+      // Optionally, show error message
+      console.error("Video upload failed:", error);
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
+    }
   };
 
   const formatFileSize = (bytes) => {

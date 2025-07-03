@@ -1,6 +1,7 @@
 import {
   createChannelService,
   getChannelService,
+  getUserChannelVideosService,
 } from "../services/channel.service.js";
 
 // Create Channel
@@ -48,5 +49,29 @@ export const getChannelController = async (req, res) => {
       success: true,
       channelDetails,
     });
-  } catch (error) {}
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
+  }
+};
+
+// Get all videos from user channel
+export const getUserChannelVideosController = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const videos = await getUserChannelVideosService(userId);
+
+    return res.status(200).json({
+      message: "Successfully fetch all videos of user.",
+      success: true,
+      videos,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
+  }
 };

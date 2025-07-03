@@ -35,13 +35,21 @@ const userSchema = new mongoose.Schema(
       ref: "Channel",
       default: null,
     },
-    videos: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "Video",
-      default: [],
-    },
+    videos: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Video",
+      },
+    ],
   },
   { timestamps: true } // Adds createdAt and updatedAt fields
 );
 
 export const User = mongoose.model("User", userSchema);
+
+// Above format is good when only objectId are stored otherwise both works same
+// videos: {
+//   type: [mongoose.Schema.Types.ObjectId],
+//   ref: "Video",
+//   default: [],
+// },

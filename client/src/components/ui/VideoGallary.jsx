@@ -1,15 +1,32 @@
 import { FaUpload } from "react-icons/fa";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import HoverVideoCard from "./HoverVideoCard";
 
 const VideoGallery = ({ videos }) => {
+  const { loading } = useSelector((state) => state.videos);
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
   return (
-    <div className="w-full max-w-6xl px-4 sm:px-6 md:px-8 mt-10 mb-10">
+    <div className="w-full max-w-7xl px-4 sm:px-6 md:px-8 mt-10 mb-10">
       {/* Section Heading */}
       <h2 className="text-xl font-semibold text-gray-800">Videos</h2>
-
       <hr className="border-gray-300 my-3" />
 
-      {videos.length === 0 ? (
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : videos.length === 0 ? (
         <div className="text-center py-16 text-gray-500 bg-white rounded-md shadow-sm">
           <p className="mb-4">No videos exist yet.</p>
           <Link
@@ -22,28 +39,12 @@ const VideoGallery = ({ videos }) => {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
-          {videos.map((video, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-lg shadow-md overflow-hidden"
-            >
-              <img
-                src={
-                  video.thumbnail ||
-                  "https://via.placeholder.com/300x180.png?text=Thumbnail"
-                }
-                alt={video.title || "Video"}
-                className="w-full h-40 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="font-semibold text-lg truncate">
-                  {video.title || "Untitled Video"}
-                </h3>
-                <p className="text-sm text-gray-500 mt-1">
-                  {video.views || 0} views
-                </p>
-              </div>
-            </div>
+          {videos.map((video) => (
+            <HoverVideoCard
+              key={video._id}
+              video={video}
+              formatDate={formatDate}
+            />
           ))}
         </div>
       )}

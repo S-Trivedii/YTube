@@ -2,12 +2,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import sidebarReducer from "./sidebarSlice"; // changing reducer name since it is a default export
 import authReducer from "./authSlice";
 import channelReducer from "./channelSetupSlice";
+import videoReducer from "./videoSlice";
 
 export const store = configureStore({
   reducer: {
     sidebar: sidebarReducer, // slice wala reducer
     auth: authReducer,
     channelSetup: channelReducer,
+    videos: videoReducer,
   },
 });
 
