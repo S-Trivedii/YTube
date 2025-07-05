@@ -1,35 +1,37 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useState } from "react";
+import { useParams, Link } from "react-router-dom";
 import Navbar from "../components/Layout/Navbar";
-import axiosInstance from "../utils/axiosInstance";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { FaThumbsUp, FaThumbsDown } from "react-icons/fa";
+import useFetchVideo from "../hooks/useFetchVideo";
+import useFetchAllVideos from "../hooks/useFetchAllVideos";
 
 const SingleVideoPage = () => {
   const { id } = useParams();
-  const [video, setVideo] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  const { allVideos } = useSelector((state) => state.videos);
+  // custom hook
+  const { video, loading } = useFetchVideo(id);
+  const allVideos = useFetchAllVideos();
 
-  useEffect(() => {
-    const fetchVideo = async () => {
-      try {
-        const res = await axiosInstance.get(`/video/${id}`);
-        setVideo(res.data.video);
-      } catch (err) {
-        console.error("Failed to load video", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
 
-    fetchVideo();
-  }, [id]);
+  const { channelLogo, channelName } = useSelector(
+    (state) => state.channelSetup
+  );
 
-  const suggestedVideos = allVideos.filter((v) => {
-    return v._id !== id;
-  });
+  // only call filter if 'allVideos' is not null and undefined
+  const suggestedVideos = allVideos?.filter((v) => v._id !== id) || [];
+
+  const handleLike = () => {
+    setLiked(!liked);
+    if (disliked) setDisliked(false);
+  };
+
+  const handleDislike = () => {
+    setDisliked(!disliked);
+    if (liked) setLiked(false);
+  };
 
   if (loading) {
     return (
@@ -47,7 +49,7 @@ const SingleVideoPage = () => {
     );
   }
 
-  const { videoUrl, videoName, videoDescription } = video;
+  const { videoUrl, videoName, videoDescription, views, createdAt } = video;
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -67,18 +69,66 @@ const SingleVideoPage = () => {
               />
             </div>
 
-            {/* Video Info */}
-            <div className="mb-4">
-              <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
-                {videoName}
-              </h1>
-              <p className="text-sm text-gray-600 mt-1">
-                150K views • 2 days ago
-              </p>
+            {/* Video Title */}
+            <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">
+              {videoName}
+            </h1>
+
+            {/* Channel Info + Join + Like/Dislike */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+              {/* Channel logo + name */}
+              <div className="flex items-center gap-3">
+                <img
+                  src={channelLogo}
+                  alt="channel logo"
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+                <p className="text-sm font-medium text-gray-700">
+                  {channelName}
+                </p>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex items-center gap-6">
+                {/* Join Now */}
+                <button className="bg-gradient-to-r from-blue-500 to-blue-700 text-white text-sm font-semibold px-5 py-2 rounded-full hover:opacity-90 transition">
+                  Join Now
+                </button>
+
+                {/* Like/Dislike */}
+                <div className="flex items-center gap-4">
+                  <button onClick={handleLike}>
+                    <FaThumbsUp
+                      className={`text-xl transform transition duration-150 ${
+                        liked
+                          ? "text-blue-600 scale-125"
+                          : "text-gray-500 scale-100"
+                      }`}
+                    />
+                  </button>
+                  <button onClick={handleDislike}>
+                    <FaThumbsDown
+                      className={`text-xl transform transition duration-150 ${
+                        disliked
+                          ? "text-blue-600 scale-125"
+                          : "text-gray-500 scale-100"
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
             </div>
 
-            {/* Description */}
+            {/* Description Box */}
             <div className="bg-white p-4 rounded-lg shadow-sm text-gray-700">
+              <p className="text-sm text-gray-600 mb-2">
+                {views || 0} views •{" "}
+                {new Date(createdAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </p>
               <p>{videoDescription || "No description provided."}</p>
             </div>
           </div>
@@ -102,12 +152,15 @@ const SingleVideoPage = () => {
                   >
                     <img
                       src={item.thumbnailUrl}
-                      alt="videothumbnail"
+                      alt="video thumbnail"
                       className="w-24 h-16 object-cover rounded-md"
                     />
                     <div className="flex flex-col">
                       <p className="text-sm font-medium text-gray-900 truncate">
                         {item.videoName}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {channelName}
                       </p>
                     </div>
                   </Link>

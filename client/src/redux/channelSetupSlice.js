@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isChannelExist: false,
-  channelLogo: null,
-  channelName: "",
+  channelLogo: localStorage.getItem("channelLogo") || null,
+  channelName: localStorage.getItem("channelName") || "",
   channelBanner: null,
   channelDescription: "",
 };

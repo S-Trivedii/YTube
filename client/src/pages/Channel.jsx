@@ -34,12 +34,24 @@ const Channel = () => {
           dispatch(setChannelBanner(channel.channelBanner));
           dispatch(setChannelName(channel.channelName));
           dispatch(setDescription(channel.channelDescription));
+
+          // Store in localStorage for persistence
+          localStorage.setItem("channelLogo", channel.channelLogo);
+          localStorage.setItem("channelName", channel.channelName);
         } else {
           dispatch(setIsChannelExist(false));
+
+          // Clear localStorage if channel doesn't exist
+          localStorage.removeItem("channelLogo");
+          localStorage.removeItem("channelName");
         }
       } catch (err) {
         console.error("Failed to fetch channel", err);
         dispatch(setIsChannelExist(false));
+
+        // Clear localStorage in case of error
+        localStorage.removeItem("channelLogo");
+        localStorage.removeItem("channelName");
       } finally {
         setLoading(false); // Hide loading after API call finishes
       }
