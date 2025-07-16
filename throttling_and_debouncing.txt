@@ -1,0 +1,61 @@
+Throttling vs Debouncing
+
+Both throttling and debouncing are techniques used to control how often a function gets executed, especially in 
+response to high-frequency events like:
+
+- scroll
+- resize
+- input
+- mousemove
+
+These techniques help optimize performance by reducing the number of function calls.
+
+------------------------------
+
+✅ Throttling: 
+Throttling ensures a function is called at most once every X milliseconds, even if the event keeps firing.
+
+💡 Use Case:
+Useful when you want to perform an action regularly, but not too frequently — like updating scroll position, 
+tracking mouse movement, etc.
+
+Example:
+
+const throttledFunc = throttle(() => {
+  console.log("Throttled scroll event");
+}, 1000);
+
+window.addEventListener("scroll", throttledFunc);
+
+✅ If you scroll continuously, this will log once every 1000 ms (1 second), regardless of how often the scroll 
+event fires.
+'
+NOTE: If you ever need throttle function, use 'lodash.throttle'
+npm i lodash.throttle
+
+---------------------------------
+
+
+✅ Debouncing:
+Debouncing delays the function execution until after a certain period has passed without the event firing again.
+
+💡 Use Case:
+Useful when you want to perform an action only after the user has stopped doing something — like typing in a 
+search box.
+
+Example:
+
+const debouncedFunc = debounce(() => {
+  console.log("Search triggered");
+}, 1000);
+
+input.addEventListener("input", debouncedFunc);
+
+✅ If the user types continuously, the function won’t run.
+It will only run 1 second after the user stops typing.
+
+NOTE: If you ever need debounce, use 'lodash.debounce'
+npm install lodash.debounce
+
+
+-----------------------------------

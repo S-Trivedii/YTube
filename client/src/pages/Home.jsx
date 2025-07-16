@@ -3,21 +3,40 @@ import { HiPlusSm } from "react-icons/hi";
 import { FaTimes } from "react-icons/fa";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import useInfiniteScroll from "../hooks/useInfiniteScroll";
 
 const Home = () => {
+  const {
+    data: videos,
+    loading,
+    hasMore,
+  } = useInfiniteScroll({
+    endpoint: "/video",
+    limit: 10,
+  });
   const [showCreateCard, setShowCreateCard] = useState(true);
 
   return (
     <div className="p-4 space-y-8">
       {/* Grid of Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {[...Array(9)].map((_, i) => (
-          <div key={i} className="bg-white rounded shadow-sm p-2">
-            <div className="w-full h-40 bg-gray-300 mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded w-3/4 mb-1"></div>
-            <div className="h-4 bg-gray-100 rounded w-1/2"></div>
+        {videos.map((video) => (
+          <div
+            key={video._id}
+            className="border p-4 mb-3 rounded shadow-sm bg-white"
+          >
+            <h2 className="font-semibold">{video.videoName}</h2>
+            {/* Add more video info here */}
           </div>
         ))}
+
+        {loading && (
+          <div className="text-center mt-4">Loading more videos...</div>
+        )}
+
+        {!loading && !hasMore && (
+          <div className="text-center mt-4 text-gray-500">No more videos</div>
+        )}
       </div>
 
       {/* Create Channel Card with Close Button */}
@@ -55,3 +74,13 @@ const Home = () => {
 };
 
 export default Home;
+
+// {
+//   /* {[...Array(9)].map((_, i) => (
+//           <div key={i} className="bg-white rounded shadow-sm p-2">
+//             <div className="w-full h-40 bg-gray-300 mb-2"></div>
+//             <div className="h-4 bg-gray-200 rounded w-3/4 mb-1"></div>
+//             <div className="h-4 bg-gray-100 rounded w-1/2"></div>
+//           </div>
+//         ))} */
+// }
