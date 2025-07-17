@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Navbar from "../components/Layout/Navbar";
-import { useSelector } from "react-redux";
 import { FaThumbsUp, FaThumbsDown } from "react-icons/fa";
 import useFetchVideo from "../hooks/useFetchVideo";
 import useFetchAllVideos from "../hooks/useFetchAllVideos";
+import DescriptionBox from "../components/ui/DescriptionBox";
+import SuggestedVideos from "../components/Layout/SuggestedVideos";
 
 const SingleVideoPage = () => {
   const { id } = useParams();
@@ -15,10 +16,6 @@ const SingleVideoPage = () => {
 
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
-
-  const { channelLogo, channelName } = useSelector(
-    (state) => state.channelSetup
-  );
 
   // only call filter if 'allVideos' is not null and undefined
   const suggestedVideos = allVideos?.filter((v) => v._id !== id) || [];
@@ -49,7 +46,9 @@ const SingleVideoPage = () => {
     );
   }
 
-  const { videoUrl, videoName, videoDescription, views, createdAt } = video;
+  // video value might be null before it is fully loaded
+  const { videoUrl, videoName, videoDescription, videoChannel } = video;
+  const { channelLogo, channelName } = videoChannel;
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -90,11 +89,9 @@ const SingleVideoPage = () => {
 
               {/* Buttons */}
               <div className="flex items-center gap-6">
-                {/* Join Now */}
                 <button className="bg-gradient-to-r from-blue-500 to-blue-700 text-white text-sm font-semibold px-5 py-2 rounded-full hover:opacity-90 transition">
                   Join Now
                 </button>
-
                 {/* Like/Dislike */}
                 <div className="flex items-center gap-4">
                   <button onClick={handleLike}>
@@ -120,54 +117,14 @@ const SingleVideoPage = () => {
             </div>
 
             {/* Description Box */}
-            <div className="bg-white p-4 rounded-lg shadow-sm text-gray-700">
-              <p className="text-sm text-gray-600 mb-2">
-                {views || 0} views •{" "}
-                {new Date(createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })}
-              </p>
-              <p>{videoDescription || "No description provided."}</p>
-            </div>
+            <DescriptionBox videoDescription={videoDescription} />
           </div>
 
           {/* Suggested Videos Section */}
-          <div className="w-full lg:w-1/4">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">
-              More from this channel
-            </h2>
-            <div className="space-y-4">
-              {suggestedVideos.length === 0 ? (
-                <p className="text-gray-500 text-sm">
-                  No suggestions available.
-                </p>
-              ) : (
-                suggestedVideos.map((item) => (
-                  <Link
-                    to={`/video/${item._id}`}
-                    key={item._id}
-                    className="flex gap-3 hover:bg-gray-200 p-2 rounded-md transition"
-                  >
-                    <img
-                      src={item.thumbnailUrl}
-                      alt="video thumbnail"
-                      className="w-24 h-16 object-cover rounded-md"
-                    />
-                    <div className="flex flex-col">
-                      <p className="text-sm font-medium text-gray-900 truncate">
-                        {item.videoName}
-                      </p>
-                      <p className="text-xs text-gray-500 truncate">
-                        {channelName}
-                      </p>
-                    </div>
-                  </Link>
-                ))
-              )}
-            </div>
-          </div>
+          <SuggestedVideos
+            suggestedVideos={suggestedVideos}
+            channelName={channelName}
+          />
         </div>
       </div>
     </div>
