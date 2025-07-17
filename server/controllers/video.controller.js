@@ -1,6 +1,7 @@
 import {
   uploadVideoService,
   getVideoByIdService,
+  getAllVideosService,
 } from "../services/video.service.js";
 
 // Upload video
@@ -50,7 +51,7 @@ export const uploadVideoController = async (req, res) => {
 export const getVideoByIdController = async (req, res) => {
   try {
     const { videoId } = req.params;
-    console.log("params ", videoId);
+    // console.log("params ", videoId);
 
     const video = await getVideoByIdService(videoId);
 
@@ -58,6 +59,29 @@ export const getVideoByIdController = async (req, res) => {
       message: "Successfully retrive video",
       success: true,
       video,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Video retrived failed",
+      error: error.message,
+      success: false,
+    });
+  }
+};
+
+// Get all videos
+export const getAllVideosController = async (req, res) => {
+  try {
+    const offset = parseInt(req.query.offset) || 0;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const { videos, totalCount } = await getAllVideosService(offset, limit);
+
+    return res.status(200).json({
+      message: "Successfully retrived all videos",
+      success: true,
+      videos,
+      totalCount,
     });
   } catch (error) {
     return res.status(500).json({

@@ -26,6 +26,29 @@ export const uploadVideoRepo = async ({
 };
 
 export const getVideoByIdRepo = async (videoId) => {
-  const video = await Video.findOne({ _id: videoId });
+  const video = await Video.findOne({ _id: videoId })
+    .populate({
+      path: "videoChannel",
+      select: "channelLogo channelName",
+    })
+    .lean();
+
+  // lean() return a plain JS object. It does not have method like .save() since it is not a document. lean() is good for read operation
   return video;
+};
+
+export const getAllVideosRepo = async (offset, limit) => {
+  const videos = await Video.find()
+    .populate({
+      path: "videoChannel",
+      select: "channelLogo channelName",
+    })
+    .sort({ createdAt: -1 })
+    .skip(offset)
+    .limit(limit)
+    .lean();
+
+  const totalCount = await Video.countDocuments();
+
+  return { videos, totalCount };
 };

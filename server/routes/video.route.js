@@ -3,9 +3,13 @@ import { auth } from "../middleware/auth.js";
 import {
   uploadVideoController,
   getVideoByIdController,
+  getAllVideosController,
 } from "../controllers/video.controller.js";
 import { mixedUpload } from "../middleware/upload.js";
 const videoRouter = express.Router();
+
+// Get all videos for Home Page
+videoRouter.get("/", getAllVideosController);
 
 // Upload video
 videoRouter.post(

@@ -1,9 +1,8 @@
-import { GoPerson } from "react-icons/go";
-import { HiPlusSm } from "react-icons/hi";
-import { FaTimes } from "react-icons/fa";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import useInfiniteScroll from "../hooks/useInfiniteScroll";
+import CreateChannelBanner from "../components/ui/CreateChannelBanner";
+import FilterButtons from "../components/Layout/FilterButtons";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const {
@@ -15,72 +14,92 @@ const Home = () => {
     limit: 10,
   });
   const [showCreateCard, setShowCreateCard] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
+  const filterVideosByCategory =
+    selectedCategory === "all"
+      ? videos
+      : videos.filter((video) => video.videoCategory === selectedCategory);
+
+  useEffect(() => {
+    if (localStorage.getItem("banner") === "true") {
+      setShowCreateCard(false);
+    }
+  }, []);
 
   return (
     <div className="p-4 space-y-8">
+      {!showCreateCard && (
+        <FilterButtons
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+        />
+      )}
+
+      <CreateChannelBanner
+        showCreateCard={showCreateCard}
+        setShowCreateCard={setShowCreateCard}
+      />
+
       {/* Grid of Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {videos.map((video) => (
-          <div
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {filterVideosByCategory.map((video) => (
+          <Link
+            to={`/video/${video._id}`}
             key={video._id}
-            className="border p-4 mb-3 rounded shadow-sm bg-white"
+            className="group bg-white rounded-lg shadow-sm overflow-hidden transform transition duration-200 hover:shadow-lg hover:-translate-y-1 cursor-pointer"
           >
-            <h2 className="font-semibold">{video.videoName}</h2>
-            {/* Add more video info here */}
-          </div>
+            <div className="relative w-full h-48 bg-black">
+              <video
+                className="w-full h-full object-cover"
+                src={video.videoUrl}
+                poster={video.thumbnailUrl}
+                muted
+                playsInline
+                onMouseEnter={(e) => e.target.play()}
+                onMouseLeave={(e) => {
+                  e.target.pause();
+                  e.target.currentTime = 0;
+                }}
+              />
+            </div>
+
+            <div className="p-4 space-y-2">
+              {/* Channel Logo + Title */}
+              <div className="flex items-start gap-3">
+                <img
+                  src={video.videoChannel.channelLogo}
+                  alt="Channel Logo"
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+
+                <div>
+                  <h3 className="text-md font-semibold leading-tight line-clamp-2">
+                    {video.videoName}
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {video.videoChannel.channelName}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Link>
         ))}
 
         {loading && (
-          <div className="text-center mt-4">Loading more videos...</div>
+          <div className="text-center mt-4 col-span-full">
+            Loading more videos...
+          </div>
         )}
 
         {!loading && !hasMore && (
-          <div className="text-center mt-4 text-gray-500">No more videos</div>
+          <div className="text-center mt-4 text-gray-500 col-span-full">
+            No more videos
+          </div>
         )}
       </div>
-
-      {/* Create Channel Card with Close Button */}
-      {showCreateCard && (
-        <div className="relative bg-red-100 p-6 rounded-lg shadow-md w-full text-center flex flex-col items-center">
-          {/* Close Button */}
-          <button
-            className="absolute top-3 right-3 cursor-pointer text-red-600 hover:text-red-800"
-            onClick={() => setShowCreateCard(false)}
-          >
-            <FaTimes />
-          </button>
-
-          <div className="text-5xl text-red-600 mb-4">
-            <GoPerson />
-          </div>
-          <h2 className="text-xl font-semibold text-red-900 mb-2">
-            Create Your Channel
-          </h2>
-          <p className="text-lg text-red-600 max-w-4xl mb-4">
-            Start your journey as a content creator. Create your channel to
-            upload and share videos with the world.
-          </p>
-          <Link
-            to="/channel/setup"
-            className="flex items-center cursor-pointer gap-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
-          >
-            <HiPlusSm className="text-lg" />
-            Create Channel
-          </Link>
-        </div>
-      )}
     </div>
   );
 };
 
 export default Home;
-
-// {
-//   /* {[...Array(9)].map((_, i) => (
-//           <div key={i} className="bg-white rounded shadow-sm p-2">
-//             <div className="w-full h-40 bg-gray-300 mb-2"></div>
-//             <div className="h-4 bg-gray-200 rounded w-3/4 mb-1"></div>
-//             <div className="h-4 bg-gray-100 rounded w-1/2"></div>
-//           </div>
-//         ))} */
-// }
