@@ -6,6 +6,7 @@ import useFetchVideo from "../hooks/useFetchVideo";
 import useFetchAllVideos from "../hooks/useFetchAllVideos";
 import DescriptionBox from "../components/ui/DescriptionBox";
 import SuggestedVideos from "../components/Layout/SuggestedVideos";
+import Comment from "../components/Layout/Comment";
 
 const SingleVideoPage = () => {
   const { id } = useParams();
@@ -118,6 +119,8 @@ const SingleVideoPage = () => {
 
             {/* Description Box */}
             <DescriptionBox videoDescription={videoDescription} />
+
+            <Comment />
           </div>
 
           {/* Suggested Videos Section */}
